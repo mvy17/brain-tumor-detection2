@@ -3,4 +3,6 @@ tensorflow
 numpy
 pillow
 werkzeug
+opencv-python-headless
 gunicorn
+
