@@ -1,0 +1,141 @@
+{% extends "import.html" %}
+{% block content %}
+
+<style>
+    body {
+        background-image: url("{{ url_for('static', filename='brain1.jpg') }}");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        font-family: Arial, sans-serif;
+        color: white;
+        margin: 0;
+        padding: 0;
+    }
+    .main-container {
+        background: rgba(0, 0, 0, 0.7);
+        padding: 40px;
+        border-radius: 15px;
+        display: inline-block;
+        margin-top: 100px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    }
+    h2 {
+        color: #fff;
+    }
+    .btn {
+        border-radius: 10px;
+    }
+    .logout-btn, .contact-btn {
+        position: absolute;
+        top: 20px;
+        padding: 10px 20px;
+        border-radius: 10px;
+        text-decoration: none;
+        color: white;
+        font-weight: bold;
+    }
+    .logout-btn {
+        right: 30px;
+        background-color: #dc3545;
+    }
+    .contact-btn {
+        right: 130px;
+        background-color: #28a745;
+    }
+    .logout-btn:hover {
+        background-color: #b52a36;
+    }
+    .contact-btn:hover {
+        background-color: #218838;
+    }
+    .loader {
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid #3498db;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 20px auto;
+        display: none;
+    }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+
+<!-- Navigation Buttons -->
+<a href="/contact" class="contact-btn">Contact</a>
+<a href="/logout" class="logout-btn">Logout</a>
+
+<center>
+    <div class="main-container">
+        <h2>🧠 Brain Tumor Prediction Using Deep Learning</h2>
+        <br>
+
+        <form id="upload-file" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" class="btn btn-success" id="imageUpload" accept=".png, .jpg, .jpeg">
+        </form>
+
+        <div class="image-section" style="display:none;">
+            <br>
+            <img id="imagePreview" class="img-responsive" src="#" style="width:300px;height:300px;display:none;"/><br><br>
+            <div>
+                <button type="button" class="btn btn-info btn-lg" id="btn-predict">Get Result</button>
+            </div>
+        </div>
+
+        <div class="loader"></div>
+
+        <h3 id="result">
+            <span></span>
+        </h3>
+    </div>
+</center>
+
+<!-- Add this script -->
+<script>
+document.getElementById('imageUpload').addEventListener('change', function(){
+    let input = this;
+    if (input.files && input.files[0]) {
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('imagePreview').src = e.target.result;
+            document.querySelector('.image-section').style.display = 'block';
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+});
+
+document.getElementById('btn-predict').addEventListener('click', function(){
+    let img = document.getElementById('imagePreview');
+    if (img.src && img.src !== "#") {
+        img.style.display = 'block'; // ensure image is visible
+        document.querySelector('.loader').style.display = 'block';
+        document.getElementById('result').innerHTML = "<span>Processing...</span>";
+
+        // Example of prediction request (modify this according to your backend)
+        let form_data = new FormData(document.getElementById('upload-file'));
+
+        fetch('/predict', {
+            method: 'POST',
+            body: form_data
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.querySelector('.loader').style.display = 'none';
+            document.getElementById('result').innerHTML = "<span>Result: " + data.result + "</span>";
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.querySelector('.loader').style.display = 'none';
+            document.getElementById('result').innerHTML = "<span style='color:red;'>Error processing the image.</span>";
+        });
+    } else {
+        alert("Please upload an image first!");
+    }
+});
+</script>
+
+{% endblock %}

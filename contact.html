@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Contact Us - Brain Tumor Detection</title>
+    <style>
+        body {
+            background-image: url("{{ url_for('static', filename='brain.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            font-family: Arial, sans-serif;
+            color: white;
+            text-align: center;
+            padding-top: 100px;
+        }
+        .contact-box {
+            background: rgba(0,0,0,0.7);
+            display: inline-block;
+            padding: 40px;
+            border-radius: 15px;
+            width: 400px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+        h2 {
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+        a:hover {
+            color: #45a049;
+        }
+        .back-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            border-radius: 10px;
+            text-decoration: none;
+            color: white;
+        }
+        .back-btn:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="contact-box">
+        <h2>📩 Contact Information</h2>
+        <p><strong>Name:</strong> Dr Jonny</p>
+        <p><strong>Email:</strong> <a href="mailto:king17@gmail.com">jayadev@gmail.com.com</a></p>
+        <p><strong>Phone:</strong> +91 9876543210</p>
+        <p><strong>More information:</strong><a href="https://jayadevacardiology.com/">click here</a></p>
+        <a href="/home" class="back-btn">⬅ Back to Home</a>
+    </div>
+</body>
+</html>
