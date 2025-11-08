@@ -9,6 +9,7 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Flatten, Dense, Dropout
 from tensorflow.keras.applications.vgg19 import VGG19
 
+# Initialize Flask app
 app = Flask(__name__)
 app.secret_key = 'supersecretkey123'
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
@@ -17,7 +18,7 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 USERNAME = 'admins'
 PASSWORD = '123456'
 
-# Lazy model load (load only when needed)
+# Lazy model load (to prevent heavy init at startup)
 model_03 = None
 
 def load_model_lazy():
@@ -60,6 +61,7 @@ def getResult(img):
     result01 = np.argmax(result, axis=1)
     return result01
 
+# Routes
 @app.route('/', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -105,7 +107,10 @@ def contact():
         return redirect(url_for('login'))
     return render_template('contact.html')
 
-# Railway / Render-compatible Flask run
+# Expose Flask app for Gunicorn
+application = app  # 👈 This is the key line for Railway / Gunicorn
+
+# Local run (only if run directly)
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=False)
