@@ -11,7 +11,7 @@ from tensorflow.keras.applications.vgg19 import VGG19
 
 # Flask App Configuration
 app = Flask(__name__)
-app.secret_key = 'supersecretkey123'  # Change this to a secure random key
+app.secret_key = 'supersecretkey123'
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
 # Model Loading
@@ -25,14 +25,15 @@ class_2 = Dense(1152, activation='relu')(drop_out)
 output = Dense(2, activation='softmax')(class_2)
 model_03 = Model(base_model.inputs, output)
 
-# Load weights
-model_03.load_weights(
-    r"C:\Users\yashwanth\Documents\Advance_Brain_Tumor_Classification-main\model_weights\vgg19_model_02.weights.h5"
-)
-print('Model loaded successfully. Open: http://127.0.0.1:5000/')
+# NOTE: change this path to relative for Render deployment
+MODEL_PATH = os.path.join(os.path.dirname(__file__), "model_weights", "vgg19_model_02.weights.h5")
+if os.path.exists(MODEL_PATH):
+    model_03.load_weights(MODEL_PATH)
+    print("✅ Model loaded successfully.")
+else:
+    print("⚠️ Model weights file not found — check your Render environment.")
 
 # Helper Functions
-
 def get_className(classNo):
     if classNo == 0:
         return "No Brain Tumor"
@@ -50,13 +51,11 @@ def getResult(img):
     return result01
 
 # Authentication Config
-
 USERNAME = 'admins'
 PASSWORD = '123456'
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
-    """Login route"""
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
@@ -69,20 +68,17 @@ def login():
 
 @app.route('/logout')
 def logout():
-    """Logout route"""
     session.pop('user', None)
     return redirect(url_for('login'))
 
 @app.route('/home')
 def index():
-    """Main app page"""
     if 'user' not in session:
         return redirect(url_for('login'))
     return render_template('index.html', version=time.time())
 
 @app.route('/predict', methods=['POST'])
 def upload():
-    """Prediction route"""
     if 'user' not in session:
         return redirect(url_for('login'))
 
@@ -97,14 +93,15 @@ def upload():
     result = get_className(value)
     return result
 
-# Contact Page Route
 @app.route('/contact')
 def contact():
-    """Contact Information Page"""
     if 'user' not in session:
         return redirect(url_for('login'))
     return render_template('contact.html')
 
-# Run Flask App
+# Run Flask App (Render compatible)
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=True)
+
+
